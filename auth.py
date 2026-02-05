@@ -1,10 +1,17 @@
-from fastapi import Header, HTTPException, status
+import os
+from fastapi import Header, HTTPException
 
-API_KEY = "sample-api-key"   # change later if needed
+def verify_api_key(x_api_key: str = Header(None)):
+    api_key = os.getenv("API_KEY")
 
-def verify_api_key(x_api_key: str = Header(...)):
-    if x_api_key != API_KEY:
+    if not api_key:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid API Key"
+            status_code=500,
+            detail="API_KEY not configured on server"
+        )
+
+    if x_api_key != api_key:
+        raise HTTPException(
+            status_code=401,
+            detail="Unauthorized"
         )

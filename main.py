@@ -1,4 +1,5 @@
-from fastapi import FastAPI, File, UploadFile, Header, HTTPException
+from fastapi import FastAPI, File, UploadFile, Depends
+from auth import verify_api_key
 
 app = FastAPI(
     title="AI Voice Detection API",
@@ -6,23 +7,16 @@ app = FastAPI(
     version="1.0"
 )
 
-# Sample API Key (you can change anytime)
-API_KEY = "my-secret-key-123"
 @app.get("/")
 def root():
     return {"message": "AI Voice Detection API is running"}
 
-
 @app.post("/detect-voice")
 async def detect_voice(
     audio_file: UploadFile = File(...),
-    x_api_key: str = Header(None)
+    _: str = Depends(verify_api_key)
 ):
-    # API key validation
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
-    # Dummy response (NO ML for now)
+    # Dummy response (no ML yet)
     return {
         "status": "success",
         "prediction": "ai_generated",
